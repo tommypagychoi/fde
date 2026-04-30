@@ -1,6 +1,6 @@
 # FDE Enterprise Automation Console
 
-GitHub-ready source for the FDE Kubernetes automation dashboard.
+This repository contains the GitHub-ready source for the FDE Kubernetes automation dashboard.
 
 ## Target Servers
 
@@ -11,9 +11,10 @@ GitHub-ready source for the FDE Kubernetes automation dashboard.
 
 ## Repository Layout
 
-- `frontend/`: dashboard HTML and Nginx container config
+- `frontend/`: final dashboard HTML and Nginx container config
 - `backend/`: FastAPI source, Dockerfile, runtime configuration
 - `deploy/k8s/`: Kubernetes manifests for backend/frontend
+- `deploy/monitoring/`: kube-prometheus-stack Helm values
 - `deploy/nginx-webserver.conf`: Nginx config for `192.168.0.86`
 - `scripts/`: local bootstrap and deployment helpers
 - `.github/workflows/`: GHCR Docker image build workflow
@@ -33,12 +34,26 @@ http://127.0.0.1:8080
 http://127.0.0.1:8000/health
 ```
 
+If you do not use Docker:
+
+```powershell
+.\scripts\bootstrap-local.ps1
+```
+
 ## Kubernetes Deploy
 
-The script defaults to `ccymproxmox.iptime.org:2085`, user `root`, and `secrets/fde_deploy_key`.
+1. The manifests use `ghcr.io/tommypagychoi/fde/backend:latest` and `ghcr.io/tommypagychoi/fde/frontend:latest`.
+2. Put the SSH private key at `secrets/fde_deploy_key`.
+3. Run:
 
 ```powershell
 .\scripts\deploy-k8s.ps1
+```
+
+Remote SSH default:
+
+```text
+ccymproxmox.iptime.org:2085 / root
 ```
 
 Backend NodePort:
@@ -55,7 +70,7 @@ http://192.168.0.85:30081
 
 ## Web Server Deploy
 
-The script defaults to `ccymproxmox.iptime.org:2086`, user `root`, and `secrets/fde_deploy_key`.
+Deploy the static dashboard and Nginx reverse proxy to `192.168.0.86`:
 
 ```powershell
 .\scripts\deploy-webserver.ps1
@@ -68,6 +83,29 @@ http://192.168.0.86
 ```
 
 The web server proxies `/api/*` to `http://192.168.0.85:30080/api/*`. The backend SSH execution target uses root's kubeconfig at `/root/.kube/config`.
+
+## Monitoring Deploy
+
+Install Grafana and Prometheus with `kube-prometheus-stack`:
+
+```powershell
+.\scripts\install-monitoring.ps1
+```
+
+Monitoring URLs:
+
+```text
+Grafana:    http://192.168.0.86/grafana/
+Prometheus: http://192.168.0.86/prometheus
+Direct Grafana NodePort: http://192.168.0.81:32000
+Direct Prometheus NodePort: http://192.168.0.85:32001
+```
+
+Default Grafana login:
+
+```text
+admin / fde-admin
+```
 
 ## Dashboard Token
 
