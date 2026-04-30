@@ -1,0 +1,52 @@
+fullnameOverride: fde-monitoring
+
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: fde-admin
+  service:
+    type: NodePort
+    nodePort: 32000
+  defaultDashboardsEnabled: true
+  sidecar:
+    dashboards:
+      enabled: true
+    datasources:
+      enabled: true
+  grafana.ini:
+    server:
+      root_url: "%(protocol)s://%(domain)s:%(http_port)s/"
+
+prometheus:
+  enabled: true
+  service:
+    type: NodePort
+    nodePort: 32001
+  prometheusSpec:
+    retention: 7d
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+
+alertmanager:
+  enabled: true
+  service:
+    type: ClusterIP
+
+kube-state-metrics:
+  enabled: true
+
+prometheus-node-exporter:
+  enabled: true
+
+prometheusOperator:
+  enabled: true
+
+defaultRules:
+  create: true
