@@ -11,7 +11,7 @@ metadata:
 type: Opaque
 stringData:
   API_TOKEN: change-this-token
-  BASTION_USER: ubuntu
+  BASTION_USER: root
   BASTION_KEY_PATH: /opt/fde/keys/bastion.pem
 ---
 apiVersion: v1
@@ -25,7 +25,7 @@ data:
   EXECUTION_MODE: ssh
   BASTION_HOST: "192.168.0.85"
   BASTION_PORT: "22"
-  KUBECONFIG_PATH: /home/ubuntu/.kube/config
+  KUBECONFIG_PATH: /root/.kube/config
   SSH_TIMEOUT: "10"
   COMMAND_TIMEOUT: "30"
   AUDIT_LOG_PATH: /app/audit/audit.log
