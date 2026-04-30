@@ -4,8 +4,8 @@ GitHub-ready source for the FDE Kubernetes automation dashboard.
 
 ## Target Servers
 
-- Kubernetes master/API target: `192.168.0.85` via `ccymproxmox.iptime.org:2085`, user `tommypagy`
-- Web server/Nginx target: `192.168.0.86` via `ccymproxmox.iptime.org:2086`, user `tommypagy`
+- Kubernetes master/API target: `192.168.0.85` via `ccymproxmox.iptime.org:2085`, deploy user `root`
+- Web server/Nginx target: `192.168.0.86` via `ccymproxmox.iptime.org:2086`, deploy user `root`
 - Dashboard frontend: static HTML served by Nginx
 - Backend API: FastAPI, executes approved `kubectl`/`helm` commands through SSH bastion or local mode
 
@@ -35,10 +35,10 @@ http://127.0.0.1:8000/health
 
 ## Kubernetes Deploy
 
-The script defaults to `ccymproxmox.iptime.org:2085` and `secrets/fde_deploy_key`.
+The script defaults to `ccymproxmox.iptime.org:2085`, user `root`, and `secrets/fde_deploy_key`.
 
 ```powershell
-.\scripts\deploy-k8s.ps1 -KeyPath .\secrets\bastion.pem
+.\scripts\deploy-k8s.ps1
 ```
 
 Backend NodePort:
@@ -55,7 +55,7 @@ http://192.168.0.85:30081
 
 ## Web Server Deploy
 
-The script defaults to `ccymproxmox.iptime.org:2086` and `secrets/fde_deploy_key`.
+The script defaults to `ccymproxmox.iptime.org:2086`, user `root`, and `secrets/fde_deploy_key`.
 
 ```powershell
 .\scripts\deploy-webserver.ps1
@@ -67,7 +67,7 @@ Then open:
 http://192.168.0.86
 ```
 
-The web server proxies `/api/*` to `http://192.168.0.85:30080/api/*`.
+The web server proxies `/api/*` to `http://192.168.0.85:30080/api/*`. The backend SSH execution target uses root's kubeconfig at `/root/.kube/config`.
 
 ## Dashboard Token
 
