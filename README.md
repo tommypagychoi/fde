@@ -2,12 +2,10 @@
 
 GitHub-ready source for the FDE Kubernetes automation dashboard.
 
-Repository upload commit: `a4bf3bde43e4029e7f6f76d4523e662ab8c908ff`
-
 ## Target Servers
 
-- Kubernetes master/API target: `192.168.0.85`
-- Web server/Nginx target: `192.168.0.86`
+- Kubernetes master/API target: `192.168.0.85` via `ccymproxmox.iptime.org:2085`, user `tommypagy`
+- Web server/Nginx target: `192.168.0.86` via `ccymproxmox.iptime.org:2086`, user `tommypagy`
 - Dashboard frontend: static HTML served by Nginx
 - Backend API: FastAPI, executes approved `kubectl`/`helm` commands through SSH bastion or local mode
 
@@ -35,17 +33,9 @@ http://127.0.0.1:8080
 http://127.0.0.1:8000/health
 ```
 
-If you do not use Docker:
-
-```powershell
-.\scripts\bootstrap-local.ps1
-```
-
 ## Kubernetes Deploy
 
-1. Replace `ghcr.io/tommypagychoi/fde/...` in `deploy/k8s/*.yaml` if you fork or rename the repo.
-2. Put the SSH private key at `secrets/bastion.pem`.
-3. Run:
+The script defaults to `ccymproxmox.iptime.org:2085` and `secrets/fde_deploy_key`.
 
 ```powershell
 .\scripts\deploy-k8s.ps1 -KeyPath .\secrets\bastion.pem
@@ -65,10 +55,10 @@ http://192.168.0.85:30081
 
 ## Web Server Deploy
 
-Deploy the static dashboard and Nginx reverse proxy to `192.168.0.86`:
+The script defaults to `ccymproxmox.iptime.org:2086` and `secrets/fde_deploy_key`.
 
 ```powershell
-.\scripts\deploy-webserver.ps1 -WebServer 192.168.0.86 -User ubuntu -SshKey C:\Users\lg202\.ssh\id_rsa
+.\scripts\deploy-webserver.ps1
 ```
 
 Then open:
