@@ -2,6 +2,8 @@
 
 GitHub-ready source for the FDE Kubernetes automation dashboard.
 
+Repository upload commit: `a4bf3bde43e4029e7f6f76d4523e662ab8c908ff`
+
 ## Target Servers
 
 - Kubernetes master/API target: `192.168.0.85`
