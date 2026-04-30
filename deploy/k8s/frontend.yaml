@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fde-frontend
+  namespace: fde-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fde-frontend
+  template:
+    metadata:
+      labels:
+        app: fde-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/tommypagychoi/fde/frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fde-frontend
+  namespace: fde-system
+spec:
+  type: NodePort
+  selector:
+    app: fde-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30081

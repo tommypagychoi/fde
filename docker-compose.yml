@@ -1,0 +1,21 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    environment:
+      AUDIT_LOG_PATH: /app/logs/audit.log
+    volumes:
+      - ./backend/logs:/app/logs
+      - ./secrets:/opt/fde/keys:ro
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"

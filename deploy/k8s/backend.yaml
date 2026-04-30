@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fde-system
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fde-backend-secret
+  namespace: fde-system
+type: Opaque
+stringData:
+  API_TOKEN: change-this-token
+  BASTION_USER: ubuntu
+  BASTION_KEY_PATH: /opt/fde/keys/bastion.pem
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fde-backend-config
+  namespace: fde-system
+data:
+  APP_NAME: FDE Enterprise Automation API
+  CLUSTER_ID: prod-ha-cluster-01
+  EXECUTION_MODE: ssh
+  BASTION_HOST: "192.168.0.85"
+  BASTION_PORT: "22"
+  KUBECONFIG_PATH: /home/ubuntu/.kube/config
+  SSH_TIMEOUT: "10"
+  COMMAND_TIMEOUT: "30"
+  AUDIT_LOG_PATH: /app/audit/audit.log
+  CORS_ORIGINS: "*"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fde-backend
+  namespace: fde-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fde-backend
+  template:
+    metadata:
+      labels:
+        app: fde-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/tommypagychoi/fde/backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: fde-backend-config
+            - secretRef:
+                name: fde-backend-secret
+          volumeMounts:
+            - name: bastion-key
+              mountPath: /opt/fde/keys
+              readOnly: true
+            - name: audit
+              mountPath: /app/audit
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: bastion-key
+          secret:
+            secretName: fde-bastion-key
+            defaultMode: 0400
+        - name: audit
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fde-backend
+  namespace: fde-system
+spec:
+  type: NodePort
+  selector:
+    app: fde-backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      nodePort: 30080
