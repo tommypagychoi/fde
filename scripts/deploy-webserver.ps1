@@ -2,7 +2,7 @@ param(
     [string]$RemoteHost = "ccymproxmox.iptime.org",
     [string]$User = "tommypagy",
     [int]$RemotePort = 2086,
-    [string]$SshKey = "$env:USERPROFILE\.ssh\id_rsa"
+    [string]$SshKey = "$PSScriptRoot\..\secrets\fde_deploy_key"
 )
 
 $ErrorActionPreference = "Stop"
